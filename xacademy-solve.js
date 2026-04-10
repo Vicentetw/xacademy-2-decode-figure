@@ -40,6 +40,27 @@ return grilla;
 
 //decodificarMapa();
 //obtenerDesafio();
+
+//ENCONTRAR PUNTOS
+function encontrarPuntos(grilla, simbolo) {
+  const puntos = [];
+// Recorro con bucle externo cada fila eje Y vertical
+  for (let y = 0; y < grilla.length; y++) {
+    // Recorro con bucle interno cada columna eje X horizontal
+    for (let x = 0; x < grilla[y].length; x++) {
+      //compara simbolo en la posición actual con el simbolo objetivo, si coincide, guarda las coordenadas (x, y) en el array puntos.
+      if (grilla[y][x] === simbolo) {
+        puntos.push({ x, y });
+      }
+ 
+  }
+}
+console.log("Los puntos son: " , puntos);
+return puntos;
+}
+
+//main para pasar el reto a la función decodificarMapa y mostrar la grilla resultante. 
+
 async function main() {
   const datos = await obtenerDesafio();
 
