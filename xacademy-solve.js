@@ -98,6 +98,23 @@ function detectarForma(puntos) {
   return "triangle";
 }
 
+function calcularCentro(puntos) {
+
+  // Suma todos los valores de X usando reduce
+  // acc = acumulador, p = punto actual
+  const sumaX = puntos.reduce((acc, p) => acc + p.x, 0);
+
+  // Sumamos todos los valores de Y
+  const sumaY = puntos.reduce((acc, p) => acc + p.y, 0);
+
+  // % cantidad de puntos para obtener el promedio
+  // Math.round() redondea a entero 
+  // (el enunciado dice que .5 redondea hacia arriba, que es lo que hace Math.round)
+  return {
+    x: Math.round(sumaX / puntos.length),
+    y: Math.round(sumaY / puntos.length),
+  };
+}
 
 //main para pasar el reto a la función decodificarMapa y mostrar la grilla resultante. 
 
