@@ -1,11 +1,13 @@
-//api para solicitar el reto
+//----------------------------------------------------------------------
+//Constante para obtener el reto
+//----------------------------------------------------------------------
 const BASE_URL = "https://xacademy-ejercicio-02-2026.vercel.app/api";
 
-async function main() {
-  const res = await fetch(`${BASE_URL}/challenge`);
-  const data = await res.json();
+async function obtenerDesafio() {
+  const respuesta = await fetch(`${BASE_URL}/challenge`);
+  const datos = await respuesta.json();
 
-  console.log(data);
+  console.log(datos);
 }
 
-main();
+obtenerDesafio();
