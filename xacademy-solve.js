@@ -8,6 +8,8 @@ async function obtenerDesafio() {
   const datos = await respuesta.json();
 
   console.log(datos);
+  //retorno datos con { id: ,map: , targetSymbol: }
+  return datos;
 }
 
 obtenerDesafio();
