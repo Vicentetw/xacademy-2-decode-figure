@@ -116,6 +116,85 @@ function calcularCentro(puntos) {
   };
 }
 
+// calcularCodigo ¿QUÉ RECIBE?
+//   cantidadSimbolos → puntos.length, la cantidad de símbolos encontrados
+//   centro           → el objeto {x, y} que calculamos antes
+//
+// ¿QUÉ HACE?
+//   Aplica la fórmula del enunciado:
+//   code = (cantidad_de_símbolos * centro.x) + centro.y
+function calcularCodigo(cantidadSimbolos, centro) {
+  return (cantidadSimbolos * centro.x) + centro.y;
+}
+
+// validarRespuesta(id, forma, centro, codigo)
+async function validarRespuesta(id, forma, centro, codigo) {
+
+  // Armamo el objeto con respuesta que pide el servidor
+  const cuerpo = {
+    id:     id,                    // id del desafío
+    shape:  forma,                 // forma que detectamos
+    center: [centro.x, centro.y], // el servidor espera un array [x, y], no un objeto {x,y}
+    code:   codigo,                // el código calculado
+  };
+
+  // Hacemos el POST a /validate con el objeto const cuerpo {} convertido a JSON
+  const respuesta = await fetch(`${BASE_URL}/validate`, {
+    method:  "POST",                               // tipo de petición HTTP
+    headers: { "Content-Type": "application/json" }, // le decimos que mandamos JSON
+    body:    JSON.stringify(cuerpo),               // convertimos el objeto a string
+  });
+
+  // Parseamos la respuesta del servidor a objeto JavaScript
+  const resultado = await respuesta.json();
+
+  return resultado;
+}
+
+async function resolverDesafio() {
+
+  // PASO 1: Pedo el desafío --------------------------------------------------
+  const desafio = await obtenerDesafio();
+  console.log(`\n Desafio: ${desafio.id} | Simbolo: "${desafio.targetSymbol}"`);
+
+  // PASO 2: Decodificar el mapa Base64 en una grilla 2D -----------------------
+  const grilla = decodificarMapa(desafio.map);
+
+  // muestro el mapa visualmente
+  console.log("\n Mapa:");
+  grilla.forEach((fila, i) => console.log(`   Fila ${i}: ${fila.join(" ")}`));
+
+  // PASO 3: Encontrar todos los puntos del símbolo----------------------------- 
+  const puntos = encontrarPuntos(grilla, desafio.targetSymbol);
+  console.log(`\n   Simbolos encontrados: ${puntos.length}`);
+
+  // PASO 4: Detectar la forma--------------------------------------------------
+  const forma = detectarForma(puntos);
+  console.log(`   Forma detectada: ${forma}`);
+
+  //  PASO 5: Calcular el centro -------------------------------------------------
+  const centro = calcularCentro(puntos);
+  console.log(`   Centro: x=${centro.x}, y=${centro.y}`);
+
+  //  PASO 6: Calcular el código --------------------------------------------------
+  const codigo = calcularCodigo(puntos.length, centro);
+  console.log(`   Codigo: (${puntos.length} x ${centro.x}) + ${centro.y} = ${codigo}`);
+
+  // PASO 7: Enviar la respuesta al servidor ------------------------------------
+  const resultado = await validarRespuesta(desafio.id, forma, centro, codigo);
+
+  if (resultado.success) {
+    console.log(`\n CORRECTO! ${resultado.message}`);
+  } else {
+    console.log(`\n Incorrecto:`, resultado);
+  }
+
+  // Retornamos la forma y si fue correcto para que el loop principal lo sepa
+  return { forma, ok: resultado.success };
+}
+
+
+
 //main para pasar el reto a la función decodificarMapa y mostrar la grilla resultante. 
 
 async function main() {
