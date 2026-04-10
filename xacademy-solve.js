@@ -59,18 +59,43 @@ function encontrarPuntos(grilla, simbolo) {
   return puntos;
 }
 
-function detectarForma (puntos) {
-//extraigo los valores de x en xs y de y en ys  en un array
-const xs = puntos.map(p => p.x);
-const ys = puntos.map(p => p.y);
-//calculo el centro de la forma encontrando el punto medio entre el mínimo y máximo de las coordenadas x e y respectivamente. Esto se hace sumando el mínimo y el máximo y dividiendo por 2.
-const centroX = (Math.min(...xs) + Math.max(...xs)) / 2;
-const centroY = (Math.min(...ys) + Math.max(...ys)) / 2;
+function detectarForma(puntos) {
+  //extraigo los valores de x en xs y de y en ys  en un array
+  const xs = puntos.map(p => p.x);
+  const ys = puntos.map(p => p.y);
+  //calculo el centro de la forma encontrando el punto medio entre el mínimo y máximo de las coordenadas x e y respectivamente. Esto se hace sumando el mínimo y el máximo y dividiendo por 2.
+  const centroX = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const centroY = (Math.min(...ys) + Math.max(...ys)) / 2;
 
-const esCruz = puntos.every((p) => p.x === centroX || p.y === centroY);
+  const esCruz = puntos.every((p) => p.x === centroX || p.y === centroY);
 
-if (esCruz) {
-  return "cross";
+  if (esCruz) {
+    return "cross";
+  }
+
+  //Obseto contador de símbolos por fila y columna
+
+  const simbolosPorFila = {};
+
+  for (const p of puntos) {
+    // Si simbolosPorFila[p.y]  existe, le sumo 1.
+    // Si NO existe (undefined), uso 0 como valor inicial y le summo 1.
+    // El operador || devuelve el primer valor "truthy": undefined||0 → 0
+    simbolosPorFila[p.y] = (simbolosPorFila[p.y] || 0) + 1;
+  }
+
+  const cantidades = Object.values(simbolosPorFila);
+
+
+  const esPalindromo = cantidades.every(
+    (c, i) => c === cantidades[cantidades.length - 1 - i]
+  );
+
+  if (esPalindromo) return "square";
+
+  // triangulo 
+  // Si llega hasta acá, no es cruz ni cuadrado → es triángulo
+  return "triangle";
 }
 
 
