@@ -1,3 +1,4 @@
+//api para solicitar el reto
 const BASE_URL = "https://xacademy-ejercicio-02-2026.vercel.app/api";
 
 async function main() {
