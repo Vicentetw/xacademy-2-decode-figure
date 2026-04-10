@@ -24,13 +24,13 @@ async function obtenerDesafio() {
 //Bufer.from recibe el base 64 y lo convierte a texto ascii.
 function decodificarMapa(base64) {
 
-const texto = Buffer.from(base64, 'base64').toString('ascii');
-//trim() elimina los espacios en blanco al inicio y al final del texto, luego split('\n') corta el texto por los saltos de linea para obtener cada fila, y map() convierte cada fila en un array de caracteres usando split("").
-// .split("\n")   → corta el string cada vez que encuentra un salto de línea
-//                  "fila0\nfila1\nfila2" → ["fila0", "fila1", "fila2"]
-const grilla = texto.trim().split('\n').map((fila) => fila.split(""));
-console.log(grilla);
-return grilla;
+  const texto = Buffer.from(base64, 'base64').toString('ascii');
+  //trim() elimina los espacios en blanco al inicio y al final del texto, luego split('\n') corta el texto por los saltos de linea para obtener cada fila, y map() convierte cada fila en un array de caracteres usando split("").
+  // .split("\n")   → corta el string cada vez que encuentra un salto de línea
+  //                  "fila0\nfila1\nfila2" → ["fila0", "fila1", "fila2"]
+  const grilla = texto.trim().split('\n').map((fila) => fila.split(""));
+  console.log(grilla);
+  return grilla;
 
 }
 //----------------------------------------------------------------------
@@ -44,7 +44,7 @@ return grilla;
 //ENCONTRAR PUNTOS
 function encontrarPuntos(grilla, simbolo) {
   const puntos = [];
-// Recorro con bucle externo cada fila eje Y vertical
+  // Recorro con bucle externo cada fila eje Y vertical
   for (let y = 0; y < grilla.length; y++) {
     // Recorro con bucle interno cada columna eje X horizontal
     for (let x = 0; x < grilla[y].length; x++) {
@@ -52,12 +52,27 @@ function encontrarPuntos(grilla, simbolo) {
       if (grilla[y][x] === simbolo) {
         puntos.push({ x, y });
       }
- 
+
+    }
   }
+  console.log("Los puntos son: ", puntos);
+  return puntos;
 }
-console.log("Los puntos son: " , puntos);
-return puntos;
+
+function detectarForma (puntos) {
+//extraigo los valores de x en xs y de y en ys  en un array
+const xs = puntos.map(p => p.x);
+const ys = puntos.map(p => p.y);
+//calculo el centro de la forma encontrando el punto medio entre el mínimo y máximo de las coordenadas x e y respectivamente. Esto se hace sumando el mínimo y el máximo y dividiendo por 2.
+const centroX = (Math.min(...xs) + Math.max(...xs)) / 2;
+const centroY = (Math.min(...ys) + Math.max(...ys)) / 2;
+
+const esCruz = puntos.every((p) => p.x === centroX || p.y === centroY);
+
+if (esCruz) {
+  return "cross";
 }
+
 
 //main para pasar el reto a la función decodificarMapa y mostrar la grilla resultante. 
 
