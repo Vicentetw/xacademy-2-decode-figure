@@ -198,11 +198,54 @@ async function resolverDesafio() {
 //main para pasar el reto a la función decodificarMapa y mostrar la grilla resultante. 
 
 async function main() {
-  const datos = await obtenerDesafio();
+  console.log("Iniciando...\n");
 
-  const grilla = decodificarMapa(datos.map);
+  //  guarda formas que ya resolvimos correctamente
+  const formasResueltas = new Set();
 
-  console.log("Grilla final:", grilla);
+  // Contador de intentos para evitar un loop infinito si algo falla
+  let intentos = 0;
+
+  // Continuamos mientras:
+  //   formasResueltas.size < 3  → no hayamos resuelto las 3 formas
+  //   intentos < 30             → no hayamos superado 30 intentos por el bloqueo
+  while (formasResueltas.size < 3 && intentos < 30) {
+
+    intentos++;
+
+    // Mostramos el progreso actual
+    // [...formasResueltas] convierte el Set en array para poder usar .join()
+    console.log(`\n--- Intento #${intentos} | Resueltos: [${[...formasResueltas].join(", ") || "ninguno"}] ---`);
+
+    try {
+      // Resolvemos un desafío y obtenemos la forma detectada y si fue correcto
+      const { forma, ok } = await resolverDesafio();
+
+      // Solo agregamo al Set si el servidor confirmó que estaba bien
+      if (ok) formasResueltas.add(forma);
+
+    } catch (error) {
+      // try/catch captura cualquier error inesperado (red caída, servidor, etc.)
+      // En vez de crashear el programa, mostramos el error y seguimos
+      console.error("Error:", error.message);
+    }
+
+    // Pausa de 2.5 segundos para respetar el rate limit del servidor
+    // Solo esperamos si todavía nos faltan formas por resolver
+    if (formasResueltas.size < 3) {
+      await new Promise((r) => setTimeout(r, 2500));
+    }
+  }
+
+  // Mensaje final dependiendo del resultado
+  if (formasResueltas.size === 3) {
+    console.log(`\nCompletado! Resolviste las 3 formas: square, triangle, cross`);
+  } else {
+    console.log(`\nSe acabaron los intentos. Resueltos: [${[...formasResueltas].join(", ")}]`);
+    console.log("Espera 1 minuto y volve a correr: node xacademy-solve.js");
+  }
 }
+
+// Llamamos a main() para arrancar el programa.
 
 main();
